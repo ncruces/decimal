@@ -13,7 +13,18 @@ func Int64(i int64) Number {
 }
 
 func Float64(f float64) Number {
-	return floatNumber(f)
+	var tmp rat
+	if tmp.SetFloat64(f) == nil {
+		switch {
+		case f != f:
+			return "NaN"
+		case f > 0:
+			return "+Inf"
+		case f < 0:
+			return "-Inf"
+		}
+	}
+	return tmp.toNumber()
 }
 
 func Neg(a Number) Number {
@@ -27,45 +38,45 @@ func Neg(a Number) Number {
 }
 
 func Add(a, b Number) Number {
-	var da, db decimal
-	if da.setNumber(a) && db.setNumber(b) {
-		return da.add(&da, &db).number()
+	var ra, rb rat
+	if ra.fromNumber(a) && rb.fromNumber(b) {
+		return ra.add(&ra, &rb).toNumber()
 	}
 	return "Add(" + a + "," + b + ")"
 }
 
 func Sub(a, b Number) Number {
-	var da, db decimal
-	if da.setNumber(a) && db.setNumber(b) {
-		return da.sub(&da, &db).number()
+	var ra, rb rat
+	if ra.fromNumber(a) && rb.fromNumber(b) {
+		return ra.sub(&ra, &rb).toNumber()
 	}
 	return "Sub(" + a + "," + b + ")"
 }
 
 func Mul(a, b Number) Number {
-	var da, db decimal
-	if da.setNumber(a) && db.setNumber(b) {
-		return da.mul(&da, &db).number()
+	var ra, rb rat
+	if ra.fromNumber(a) && rb.fromNumber(b) {
+		return ra.mul(&ra, &rb).toNumber()
 	}
 	return "Mul(" + a + "," + b + ")"
 }
 
 func Cmp(a, b Number) int {
-	var da, db decimal
-	if da.setNumber(a) && db.setNumber(b) {
-		return da.cmp(&db)
+	var ra, rb rat
+	if ra.fromNumber(a) && rb.fromNumber(b) {
+		return ra.cmp(&rb)
 	}
 	return strings.Compare(a.String(), b.String())
 }
 
 func Sum(n ...Number) Number {
-	var da, db decimal
+	var rs, rn rat
 	for _, n := range n {
-		if db.setNumber(n) {
-			da.add(&da, &db)
+		if rn.fromNumber(n) {
+			rs.add(&rs, &rn)
 		} else {
 			return "Sum(...," + n + ",...)"
 		}
 	}
-	return da.number()
+	return rs.toNumber()
 }
