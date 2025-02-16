@@ -6,3 +6,9 @@
 
 Arithmetic that works on a type alias of [`json.Number`](https://pkg.go.dev/encoding/json#Number),
 inspired by [SQLite](https://www.sqlite.org/floatingpoint.html#the_decimal_c_extension).
+
+Since `Number` is a `string`, string literals are valid numbers, and you can do:
+
+```go
+decimal.Sum("0.1", "0.1", "0.1", "-0.3") // == "0"
+```
