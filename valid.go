@@ -17,7 +17,7 @@ func valid(n Number) bool {
 		case '-':
 			switch d {
 			case '0':
-				state = d
+				state = '0'
 			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				state = '1'
 			default:
@@ -27,7 +27,7 @@ func valid(n Number) bool {
 		case '0':
 			switch d {
 			case '.':
-				state = d
+				state = '.'
 			case 'e', 'E':
 				state = 'e'
 			default:
@@ -39,17 +39,7 @@ func valid(n Number) bool {
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				continue
 			case '.':
-				state = d
-			case 'e', 'E':
-				state = 'e'
-			default:
-				return false
-			}
-
-		case '2':
-			switch d {
-			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-				continue
+				state = '.'
 			case 'e', 'E':
 				state = 'e'
 			default:
@@ -60,6 +50,16 @@ func valid(n Number) bool {
 			switch d {
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				state = '2'
+			default:
+				return false
+			}
+
+		case '2':
+			switch d {
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				continue
+			case 'e', 'E':
+				state = 'e'
 			default:
 				return false
 			}

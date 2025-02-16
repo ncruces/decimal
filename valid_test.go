@@ -12,6 +12,7 @@ func Fuzz_valid(f *testing.F) {
 	f.Add("-1")
 	f.Add("0e0")
 	f.Add("1.0")
+	f.Add("1.00")
 	f.Add("1e-1")
 	f.Add("1E+10")
 	f.Add("1.0e0")

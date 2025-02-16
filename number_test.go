@@ -67,7 +67,7 @@ func TestFloat64(t *testing.T) {
 
 func TestNeg(t *testing.T) {
 	tests := []struct {
-		i64  decimal.Number
+		x    decimal.Number
 		want decimal.Number
 	}{
 		{"0", "-0"},
@@ -81,35 +81,108 @@ func TestNeg(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.want), func(t *testing.T) {
-			if got := decimal.Neg(tt.i64); got != tt.want {
+			if got := decimal.Neg(tt.x); got != tt.want {
 				t.Errorf("Int64() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestXxx(t *testing.T) {
-	if got := decimal.Mul("0.1", "2.5"); decimal.Cmp(got, "0.25") != 0 {
-		t.Errorf("got %v", got)
+func TestAdd(t *testing.T) {
+	tests := []struct {
+		x    decimal.Number
+		y    decimal.Number
+		want decimal.Number
+	}{
+		{"0", "-0", "0"},
+		{"-0", "0", "0"},
+		{"0.1", "0.2", "0.3"},
+		{"0.1", "+Inf", "Add(0.1,+Inf)"},
 	}
-
-	if got := decimal.Mul("-0.1", "2.5"); decimal.Cmp(got, "-0.25") != 0 {
-		t.Errorf("got %v", got)
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := decimal.Add(tt.x, tt.y); got != tt.want {
+				t.Errorf("Add() = %v, want %v", got, tt.want)
+			}
+		})
 	}
+}
 
-	if got := decimal.Add("0.1", "2.5"); decimal.Cmp(got, "2.6") != 0 {
-		t.Errorf("got %v", got)
+func TestSub(t *testing.T) {
+	tests := []struct {
+		x    decimal.Number
+		y    decimal.Number
+		want decimal.Number
+	}{
+		{"0", "-0", "0"},
+		{"-0", "0", "0"},
+		{"0.3", "0.2", "0.1"},
+		{"0.1", "+Inf", "Sub(0.1,+Inf)"},
 	}
-
-	if got := decimal.Sub("0.1", "2.5"); decimal.Cmp(got, "-2.4") != 0 {
-		t.Errorf("got %v", got)
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := decimal.Sub(tt.x, tt.y); got != tt.want {
+				t.Errorf("Sub() = %v, want %v", got, tt.want)
+			}
+		})
 	}
+}
 
-	if got := decimal.Sum("0.1", "2.5"); decimal.Cmp(got, "2.6") != 0 {
-		t.Errorf("got %v", got)
+func TestMul(t *testing.T) {
+	tests := []struct {
+		x    decimal.Number
+		y    decimal.Number
+		want decimal.Number
+	}{
+		{"0", "-0", "0"},
+		{"-0", "0", "0"},
+		{"0.1", "3", "0.3"},
+		{"0.1", "+Inf", "Mul(0.1,+Inf)"},
 	}
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := decimal.Mul(tt.x, tt.y); got != tt.want {
+				t.Errorf("Mul() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
-	if got := decimal.Sum("0.1", "2.5", "-2"); decimal.Cmp(got, "0.6") != 0 {
-		t.Errorf("got %v", got)
+func TestCmp(t *testing.T) {
+	tests := []struct {
+		x    decimal.Number
+		y    decimal.Number
+		want int
+	}{
+		{"0", "-0", 0},
+		{"-0", "0", 0},
+		{"0.1", "0.2", -1},
+		{"0.1", "+Inf", 1},
+	}
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			if got := decimal.Cmp(tt.x, tt.y); got != tt.want {
+				t.Errorf("Cmp() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSum(t *testing.T) {
+	tests := []struct {
+		n    []decimal.Number
+		want decimal.Number
+	}{
+		{[]decimal.Number{"0"}, "0"},
+		{[]decimal.Number{"-0"}, "0"},
+		{[]decimal.Number{"0.1", "0.1", "0.1"}, "0.3"},
+		{[]decimal.Number{"0.1", "+Inf", "0.1"}, "Sum(...,+Inf,...)"},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := decimal.Sum(tt.n...); got != tt.want {
+				t.Errorf("Sum() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
