@@ -3,6 +3,8 @@ package decimal
 
 import (
 	"encoding/json"
+	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 )
@@ -69,7 +71,7 @@ func Mul(x, y Number) Number {
 	return "Mul(" + x + "," + y + ")"
 }
 
-// Cmp compares a and b, like [cmp.Compare].
+// Cmp compares x and y, like [cmp.Compare].
 func Cmp(x, y Number) int {
 	var rx, ry rat
 	if rx.fromNumber(x) && ry.fromNumber(y) {
@@ -89,4 +91,17 @@ func Sum(n ...Number) Number {
 		}
 	}
 	return rs.toNumber()
+}
+
+// Fmt returns a formatter for x.
+// The result will be accurate to at least
+// 100 signifiant decimal digits more than
+// the exact decimal representation of x.
+func Fmt(x Number) fmt.Formatter {
+	var fx big.Float
+	if valid(x) {
+		fx.SetPrec(333 + 107*uint(digits(x)/32))
+	}
+	f, _, _ := fx.Parse(string(x), 10)
+	return f
 }
