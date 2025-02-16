@@ -1,5 +1,6 @@
 package decimal
 
+// Validate JSON number syntax.
 func valid(n Number) bool {
 	var state byte
 	for _, d := range []byte(n) {

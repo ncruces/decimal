@@ -1,6 +1,7 @@
 package decimal_test
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -182,6 +183,31 @@ func TestSum(t *testing.T) {
 		t.Run(string(tt.want), func(t *testing.T) {
 			if got := decimal.Sum(tt.n...); got != tt.want {
 				t.Errorf("Sum() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFmt(t *testing.T) {
+	tests := []struct {
+		fmt  string
+		x    decimal.Number
+		want string
+	}{
+		{"%g", "0.1", "0.1"},
+		{"%g", "1e-100", "1e-100"},
+		{"%f", "1e-1", "0.100000"},
+		{"%f", "1e-10", "0.000000"},
+		{"%.100f", "0.1", "0.1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"},
+		{"%.100f", "1e-10", "0.0000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"},
+		{"%g", "3.14159265358979323846264338327950288419716939937510582097494459", "3.14159265358979323846264338327950288419716939937510582097494459"},
+		{"%g", "NaN", "<nil>"},
+		{"%g", "Inf", "+Inf"},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := fmt.Sprintf(tt.fmt, decimal.Fmt(tt.x)); got != tt.want {
+				t.Errorf("Fmt() = %v, want %v", got, tt.want)
 			}
 		})
 	}
