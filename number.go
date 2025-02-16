@@ -1,3 +1,4 @@
+// Package decimal implements arbitrary-precision decimal arithmetic.
 package decimal
 
 import (
@@ -6,15 +7,18 @@ import (
 	"strings"
 )
 
+// A Number is an arbitrary precision decimal number, stored as JSON text.
 type Number = json.Number
 
+// Int64 converts i into a decimal number.
 func Int64(i int64) Number {
 	return Number(strconv.FormatInt(i, 10))
 }
 
+// Float64 converts f into a decimal number.
 func Float64(f float64) Number {
-	var tmp rat
-	if tmp.SetFloat64(f) == nil {
+	var rf rat
+	if rf.SetFloat64(f) == nil {
 		switch {
 		case f != f:
 			return "NaN"
@@ -24,51 +28,57 @@ func Float64(f float64) Number {
 			return "-Inf"
 		}
 	}
-	return tmp.toNumber()
+	return rf.toNumber()
 }
 
-func Neg(a Number) Number {
-	if !valid(a) {
-		return "Neg(" + a + ")"
+// Neg returns x with its sign negated.
+func Neg(x Number) Number {
+	if !valid(x) {
+		return "Neg(" + x + ")"
 	}
-	if len(a) > 1 && a[0] == '-' {
-		return a[1:]
+	if len(x) > 1 && x[0] == '-' {
+		return x[1:]
 	}
-	return "-" + a
+	return "-" + x
 }
 
-func Add(a, b Number) Number {
-	var ra, rb rat
-	if ra.fromNumber(a) && rb.fromNumber(b) {
-		return ra.add(&ra, &rb).toNumber()
+// Add returns the sum x + y.
+func Add(x, y Number) Number {
+	var rx, ry rat
+	if rx.fromNumber(x) && ry.fromNumber(y) {
+		return rx.add(&rx, &ry).toNumber()
 	}
-	return "Add(" + a + "," + b + ")"
+	return "Add(" + x + "," + y + ")"
 }
 
-func Sub(a, b Number) Number {
-	var ra, rb rat
-	if ra.fromNumber(a) && rb.fromNumber(b) {
-		return ra.sub(&ra, &rb).toNumber()
+// Sub returns the difference x - y.
+func Sub(x, y Number) Number {
+	var rx, ry rat
+	if rx.fromNumber(x) && ry.fromNumber(y) {
+		return rx.sub(&rx, &ry).toNumber()
 	}
-	return "Sub(" + a + "," + b + ")"
+	return "Sub(" + x + "," + y + ")"
 }
 
-func Mul(a, b Number) Number {
-	var ra, rb rat
-	if ra.fromNumber(a) && rb.fromNumber(b) {
-		return ra.mul(&ra, &rb).toNumber()
+// Mul returns the product x * y.
+func Mul(x, y Number) Number {
+	var rx, ry rat
+	if rx.fromNumber(x) && ry.fromNumber(y) {
+		return rx.mul(&rx, &ry).toNumber()
 	}
-	return "Mul(" + a + "," + b + ")"
+	return "Mul(" + x + "," + y + ")"
 }
 
-func Cmp(a, b Number) int {
-	var ra, rb rat
-	if ra.fromNumber(a) && rb.fromNumber(b) {
-		return ra.cmp(&rb)
+// Cmp compares a and b, like [cmp.Compare].
+func Cmp(x, y Number) int {
+	var rx, ry rat
+	if rx.fromNumber(x) && ry.fromNumber(y) {
+		return rx.cmp(&ry)
 	}
-	return strings.Compare(a.String(), b.String())
+	return strings.Compare(x.String(), y.String())
 }
 
+// Sum returns the sum of all n.
 func Sum(n ...Number) Number {
 	var rs, rn rat
 	for _, n := range n {
