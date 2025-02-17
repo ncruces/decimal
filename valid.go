@@ -102,6 +102,6 @@ func IsValid(n Number) bool {
 
 func checkValid(n Number) {
 	if !IsValid(n) {
-		panic("invalid decimal: " + n)
+		panic("invalid decimal: " + string(n))
 	}
 }

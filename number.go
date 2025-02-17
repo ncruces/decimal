@@ -29,14 +29,12 @@ func Float64(f float64) Number {
 			panic("invalid decimal: -Inf")
 		}
 	}
-	return ratNumber(&rf)
+	return toNumber(&rf)
 }
 
 // Neg returns x with its sign negated.
 func Neg(x Number) Number {
-	if !IsValid(x) {
-		panic("invalid decimal: " + x)
-	}
+	checkValid(x)
 	if len(x) > 1 && x[0] == '-' {
 		return x[1:]
 	}
@@ -50,7 +48,7 @@ func Add(x, y Number) Number {
 	var rx, ry big.Rat
 	rx.SetString(string(x))
 	ry.SetString(string(y))
-	return ratNumber(rx.Add(&rx, &ry))
+	return toNumber(rx.Add(&rx, &ry))
 }
 
 // Sub returns the difference x - y.
@@ -60,7 +58,7 @@ func Sub(x, y Number) Number {
 	var rx, ry big.Rat
 	rx.SetString(string(x))
 	ry.SetString(string(y))
-	return ratNumber(rx.Sub(&rx, &ry))
+	return toNumber(rx.Sub(&rx, &ry))
 }
 
 // Mul returns the product x * y.
@@ -70,7 +68,18 @@ func Mul(x, y Number) Number {
 	var rx, ry big.Rat
 	rx.SetString(string(x))
 	ry.SetString(string(y))
-	return ratNumber(rx.Mul(&rx, &ry))
+	return toNumber(rx.Mul(&rx, &ry))
+}
+
+// Sum returns the sum of all n.
+func Sum(n ...Number) Number {
+	var rs, rn big.Rat
+	for _, n := range n {
+		checkValid(n)
+		rn.SetString(string(n))
+		rs.Add(&rs, &rn)
+	}
+	return toNumber(&rs)
 }
 
 // Cmp compares x and y, like [cmp.Compare].
@@ -83,34 +92,56 @@ func Cmp(x, y Number) int {
 	return rx.Cmp(&ry)
 }
 
-// Sum returns the sum of all n.
-func Sum(n ...Number) Number {
-	var rs, rn big.Rat
-	for _, n := range n {
-		checkValid(n)
-		rn.SetString(string(n))
-		rs.Add(&rs, &rn)
-	}
-	return ratNumber(&rs)
-}
+// Fmt is a formatter for x.
+type Fmt Number
 
-// Fmt returns a formatter for x.
-// The result will be accurate to at least
-// 100 signifiant decimal digits more than
-// the exact decimal representation of x.
-func Fmt(x Number) fmt.Formatter {
+// Format implements fmt.Formatter.
+// It accepts the formats for decimal floating-point numbers: 'e', 'E', 'f', 'F', 'g', 'G'.
+// The 'v' format is handled like 'g'.
+func (x Fmt) Format(f fmt.State, v rune) {
+	s := string(x)
+	prec, ok := f.Precision()
+
+	if !IsValid(Number(s)) {
+		fmt.Fprintf(f, "%%!%c(decimal=%s)", v, s)
+		return
+	}
+
+	switch v {
+	default:
+		fmt.Fprintf(f, "%%!%c(decimal=%s)", v, s)
+		return
+
+	case 'e', 'E':
+		if !ok {
+			prec = 6
+		}
+		prec += 1
+
+	case 'f', 'F':
+		if !ok {
+			prec = 6
+		}
+		prec += integerDigits(s)
+
+	case 'v', 'g', 'G':
+		if !ok {
+			prec = significantDigits(s)
+		}
+	}
+
 	var fx big.Float
-	if IsValid(x) {
-		fx.SetPrec(333 + 107*uint(digits(x)/32))
-	}
-	f, _, _ := fx.Parse(string(x), 10)
-	return f
+	prec = max(0, prec)
+	// prec in digits, multiply by log₂(10) for bits
+	fx.SetPrec((107*uint(prec) + 31) / 32)
+	fx.Parse(s, 10)
+	fx.Format(f, v)
 }
 
-func ratNumber(x *big.Rat) Number {
+func toNumber(x *big.Rat) Number {
 	n, exact := x.FloatPrec()
-	if !exact {
-		panic("inexact decimal")
+	if exact {
+		return Number(x.FloatString(n))
 	}
-	return Number(x.FloatString(n))
+	panic("inexact decimal")
 }
