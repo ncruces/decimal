@@ -1,7 +1,7 @@
 package decimal
 
-// Validate JSON number syntax.
-func valid(n Number) bool {
+// IsValid reports whether n is a valid JSON number literal.
+func IsValid(n Number) bool {
 	var state byte
 	for _, d := range []byte(n) {
 		switch state {
@@ -97,5 +97,11 @@ func valid(n Number) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func checkValid(n Number) {
+	if !IsValid(n) {
+		panic("invalid decimal: " + n)
 	}
 }

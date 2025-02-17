@@ -1,8 +1,10 @@
-package decimal
+package decimal_test
 
 import (
 	"regexp"
 	"testing"
+
+	"github.com/ncruces/decimal"
 )
 
 func Fuzz_valid(f *testing.F) {
@@ -23,7 +25,7 @@ func Fuzz_valid(f *testing.F) {
 	f.Add("0E0-")
 	f.Add("0.E0")
 	f.Add("0.0.0")
-	f.Add("+Inf")
+	f.Add("-Inf")
 	f.Add("null")
 	f.Add("NaN")
 	f.Add(`"0"`)
@@ -31,7 +33,7 @@ func Fuzz_valid(f *testing.F) {
 	f.Add("")
 
 	f.Fuzz(func(t *testing.T, str string) {
-		if ok := valid(Number(str)); ok != re.MatchString(str) {
+		if ok := decimal.IsValid(decimal.Number(str)); ok != re.MatchString(str) {
 			t.Fatalf("%q: ok=%v", str, ok)
 		}
 	})
