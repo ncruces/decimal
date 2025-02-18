@@ -100,8 +100,9 @@ func IsValid(n Number) bool {
 	}
 }
 
-func checkValid(n Number) {
-	if !IsValid(n) {
-		panic("invalid decimal: " + string(n))
+func checkValid(n Number) string {
+	if IsValid(n) {
+		return string(n)
 	}
+	panic("invalid decimal: " + string(n))
 }

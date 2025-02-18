@@ -52,31 +52,25 @@ func Neg(x Number) Number {
 
 // Add returns the sum x + y.
 func Add(x, y Number) Number {
-	checkValid(x)
-	checkValid(y)
 	var rx, ry big.Rat
-	rx.SetString(string(x))
-	ry.SetString(string(y))
+	rx.SetString(checkValid(x))
+	ry.SetString(checkValid(y))
 	return toNumber(rx.Add(&rx, &ry))
 }
 
 // Sub returns the difference x - y.
 func Sub(x, y Number) Number {
-	checkValid(x)
-	checkValid(y)
 	var rx, ry big.Rat
-	rx.SetString(string(x))
-	ry.SetString(string(y))
+	rx.SetString(checkValid(x))
+	ry.SetString(checkValid(y))
 	return toNumber(rx.Sub(&rx, &ry))
 }
 
 // Mul returns the product x * y.
 func Mul(x, y Number) Number {
-	checkValid(x)
-	checkValid(y)
 	var rx, ry big.Rat
-	rx.SetString(string(x))
-	ry.SetString(string(y))
+	rx.SetString(checkValid(x))
+	ry.SetString(checkValid(y))
 	return toNumber(rx.Mul(&rx, &ry))
 }
 
@@ -84,8 +78,7 @@ func Mul(x, y Number) Number {
 func Sum(n ...Number) Number {
 	var rs, rn big.Rat
 	for _, n := range n {
-		checkValid(n)
-		rn.SetString(string(n))
+		rn.SetString(checkValid(n))
 		rs.Add(&rs, &rn)
 	}
 	return toNumber(&rs)
@@ -93,11 +86,9 @@ func Sum(n ...Number) Number {
 
 // Cmp compares x and y, like [cmp.Compare].
 func Cmp(x, y Number) int {
-	checkValid(x)
-	checkValid(y)
 	var rx, ry big.Rat
-	rx.SetString(string(x))
-	ry.SetString(string(y))
+	rx.SetString(checkValid(x))
+	ry.SetString(checkValid(y))
 	return rx.Cmp(&ry)
 }
 

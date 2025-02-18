@@ -39,7 +39,7 @@ func TestTrunc(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.x), func(t *testing.T) {
-			if got := Trunc(tt.x); got != tt.want {
+			if got := Trunc(tt.x, "1"); got != tt.want {
 				t.Errorf("Trunc() = %v, want %v", got, tt.want)
 			}
 		})
@@ -81,7 +81,7 @@ func TestFloor(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.x), func(t *testing.T) {
-			if got := Floor(tt.x); got != tt.want {
+			if got := Floor(tt.x, "1"); got != tt.want {
 				t.Errorf("Floor() = %v, want %v", got, tt.want)
 			}
 		})
@@ -123,7 +123,7 @@ func TestCeil(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.x), func(t *testing.T) {
-			if got := Ceil(tt.x); got != tt.want {
+			if got := Ceil(tt.x, "1"); got != tt.want {
 				t.Errorf("Ceil() = %v, want %v", got, tt.want)
 			}
 		})
@@ -165,7 +165,7 @@ func TestRound(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.x), func(t *testing.T) {
-			if got := Round(tt.x); got != tt.want {
+			if got := Round(tt.x, "1"); got != tt.want {
 				t.Errorf("Round() = %v, want %v", got, tt.want)
 			}
 		})
@@ -207,7 +207,7 @@ func TestRoundToEven(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.x), func(t *testing.T) {
-			if got := RoundToEven(tt.x); got != tt.want {
+			if got := RoundToEven(tt.x, "1"); got != tt.want {
 				t.Errorf("RoundToEven() = %v, want %v", got, tt.want)
 			}
 		})
