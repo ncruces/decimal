@@ -32,10 +32,19 @@ func Float64(f float64) Number {
 	return toNumber(&rf)
 }
 
-// Neg returns x with its sign negated.
+// Abs returns |x| (the absolute value of x).
+func Abs(x Number) Number {
+	checkValid(x)
+	if x[0] == '-' {
+		return x[1:]
+	}
+	return x
+}
+
+// Neg returns -x (x with its sign negated).
 func Neg(x Number) Number {
 	checkValid(x)
-	if len(x) > 1 && x[0] == '-' {
+	if x[0] == '-' {
 		return x[1:]
 	}
 	return "-" + x
@@ -92,7 +101,7 @@ func Cmp(x, y Number) int {
 	return rx.Cmp(&ry)
 }
 
-// Fmt is a formatter for x.
+// Fmt is a formatter for a decimal number.
 type Fmt Number
 
 // Format implements fmt.Formatter.

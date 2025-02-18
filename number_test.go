@@ -67,6 +67,27 @@ func TestFloat64(t *testing.T) {
 	t.Fatal("want panic")
 }
 
+func TestAbs(t *testing.T) {
+	tests := []struct {
+		x    decimal.Number
+		want decimal.Number
+	}{
+		{"0", "0"},
+		{"1", "1"},
+		{"-0", "0"},
+		{"-1", "1"},
+		{"9223372036854775807", "9223372036854775807"},
+		{"-9223372036854775808", "9223372036854775808"},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := decimal.Abs(tt.x); got != tt.want {
+				t.Errorf("Abs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestNeg(t *testing.T) {
 	tests := []struct {
 		x    decimal.Number
@@ -82,7 +103,7 @@ func TestNeg(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(string(tt.want), func(t *testing.T) {
 			if got := decimal.Neg(tt.x); got != tt.want {
-				t.Errorf("Int64() = %v, want %v", got, tt.want)
+				t.Errorf("Neg() = %v, want %v", got, tt.want)
 			}
 		})
 	}
