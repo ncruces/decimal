@@ -42,29 +42,34 @@ func Ceil(x Number) Number {
 }
 
 func Round(x Number) Number {
+	return round(x, false)
+}
+
+func RoundToEven(x Number) Number {
+	return round(x, true)
+}
+
+func round(x Number, toEven bool) Number {
 	checkValid(x)
-	var rx, rm big.Rat
+	var rx big.Rat
 	rx.SetString(string(x))
 	if rx.IsInt() {
 		return x
 	}
 
 	ix := rx.Num()
+	dx := rx.Denom()
 	neg := ix.Sign() < 0
-	if neg {
-		ix.Neg(ix)
-	}
+	ix.Abs(ix)
 
-	rm.SetInt(rx.Denom())
-	ix.QuoRem(ix, rx.Denom(), rm.Denom())
-
-	if rm.Cmp(big.NewRat(2, 1)) <= 0 {
-		ix.Add(ix, big.NewInt(1))
+	var mx big.Int
+	ix.QuoRem(ix, dx, &mx)
+	if cmp := mx.Lsh(&mx, 1).CmpAbs(dx); cmp > 0 ||
+		cmp == 0 && (!toEven || ix.Bit(0) != 0) {
+		ix.Add(ix, mx.SetUint64(1))
 	}
 	if neg {
 		ix.Neg(ix)
 	}
 	return Number(ix.String())
 }
-
-// func RoundToEven(x Number) Number
