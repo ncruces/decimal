@@ -1,8 +1,6 @@
 package decimal
 
-import (
-	"math/big"
-)
+import "math/big"
 
 // Split splits an integer amount of units over n parties.
 // Leftover units are distributed round-robin,
@@ -34,27 +32,24 @@ func allocate(amount, unit Number, n uint, ratios []uint) []Number {
 		panic("noninteger amount")
 	}
 
-	var res []big.Int
 	var sum, mod big.Int
+	var res []big.Int
+	mod.Set(ra.Num())
 
 	if ratios == nil {
-		sum.SetUint64(uint64(n))
-		mod.Set(ra.Num())
-
 		res = make([]big.Int, n)
+		sum.SetUint64(uint64(n))
 		for i := range n {
 			res[i].Div(ra.Num(), &sum)
 			mod.Sub(&mod, &res[i])
 		}
 	} else {
-		for _, r := range ratios {
-			sum.Add(&sum, mod.SetUint64(uint64(r)))
-		}
-		mod.Set(ra.Num())
-
 		res = make([]big.Int, len(ratios))
 		for i, r := range ratios {
 			res[i].SetUint64(uint64(r))
+			sum.Add(&sum, &res[i])
+		}
+		for i := range ratios {
 			res[i].Mul(&res[i], ra.Num())
 			res[i].Div(&res[i], &sum)
 			mod.Sub(&mod, &res[i])
