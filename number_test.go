@@ -208,14 +208,34 @@ func TestSum(t *testing.T) {
 		n    []decimal.Number
 		want decimal.Number
 	}{
-		{[]decimal.Number{"0"}, "0"},
+		{nil, "0"},
 		{[]decimal.Number{"-0"}, "0"},
+		{[]decimal.Number{"-1"}, "-1"},
 		{[]decimal.Number{"0.1", "0.1", "0.1"}, "0.3"},
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.want), func(t *testing.T) {
 			if got := decimal.Sum(tt.n...); got != tt.want {
 				t.Errorf("Sum() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestProd(t *testing.T) {
+	tests := []struct {
+		n    []decimal.Number
+		want decimal.Number
+	}{
+		{nil, "1"},
+		{[]decimal.Number{"-0"}, "0"},
+		{[]decimal.Number{"-1"}, "-1"},
+		{[]decimal.Number{"0.1", "0.1", "0.1"}, "0.001"},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := decimal.Prod(tt.n...); got != tt.want {
+				t.Errorf("Prod() = %v, want %v", got, tt.want)
 			}
 		})
 	}

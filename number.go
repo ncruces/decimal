@@ -84,6 +84,17 @@ func Sum(n ...Number) Number {
 	return toNumber(&rs)
 }
 
+// Prod returns the product of all n.
+func Prod(n ...Number) Number {
+	var rp, rn big.Rat
+	rp.SetUint64(1)
+	for _, n := range n {
+		rn.SetString(checkValid(n))
+		rp.Mul(&rp, &rn)
+	}
+	return toNumber(&rp)
+}
+
 // Cmp compares x and y, like [cmp.Compare].
 func Cmp(x, y Number) int {
 	var rx, ry big.Rat
