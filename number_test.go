@@ -3,6 +3,8 @@ package decimal_test
 import (
 	"fmt"
 	"math"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/ncruces/decimal"
@@ -292,4 +294,70 @@ func TestFmt(t *testing.T) {
 			}
 		})
 	}
+}
+
+func FuzzSum(f *testing.F) {
+	f.Add("")
+	f.Add("0;0;0")
+	f.Add("1;1;1")
+	f.Add("10;10;10")
+	f.Add("0.1;0.1;0.1")
+
+	f.Fuzz(func(t *testing.T, str string) {
+		v := strings.Split(str, ";")
+		if len(v) == 0 || len(v) > 97 {
+			return
+		}
+
+		sum := decimal.Number("0")
+		all := make([]decimal.Number, len(v))
+		for i, v := range v {
+			d := decimal.Number(v)
+			if !decimal.IsValid(d) {
+				return
+			}
+			if f, err := strconv.ParseFloat(v, 64); f == 0 || err != nil {
+				return
+			}
+			sum = decimal.Add(sum, d)
+			all[i] = d
+		}
+
+		if got := decimal.Sum(all...); got != sum {
+			t.Fatalf("Sum=%q Add=%q", got, sum)
+		}
+	})
+}
+
+func FuzzProd(f *testing.F) {
+	f.Add("")
+	f.Add("0;0;0")
+	f.Add("1;1;1")
+	f.Add("10;10;10")
+	f.Add("0.1;0.1;0.1")
+
+	f.Fuzz(func(t *testing.T, str string) {
+		v := strings.Split(str, ";")
+		if len(v) == 0 || len(v) > 97 {
+			return
+		}
+
+		mul := decimal.Number("1")
+		all := make([]decimal.Number, len(v))
+		for i, v := range v {
+			d := decimal.Number(v)
+			if !decimal.IsValid(d) {
+				return
+			}
+			if f, err := strconv.ParseFloat(v, 64); f == 0 || err != nil {
+				return
+			}
+			mul = decimal.Mul(mul, d)
+			all[i] = d
+		}
+
+		if got := decimal.Prod(all...); got != mul {
+			t.Fatalf("Prod=%q Mul=%q", got, mul)
+		}
+	})
 }

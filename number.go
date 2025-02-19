@@ -34,7 +34,7 @@ func Float64(f float64) Number {
 
 // Abs returns |x| (the absolute value of x).
 func Abs(x Number) Number {
-	checkValid(x)
+	checkNumber(x)
 	if x[0] == '-' {
 		return x[1:]
 	}
@@ -43,7 +43,7 @@ func Abs(x Number) Number {
 
 // Neg returns -x (x with its sign negated).
 func Neg(x Number) Number {
-	checkValid(x)
+	checkNumber(x)
 	if x[0] == '-' {
 		return x[1:]
 	}
@@ -53,24 +53,24 @@ func Neg(x Number) Number {
 // Add returns the sum x + y.
 func Add(x, y Number) Number {
 	var rx, ry big.Rat
-	rx.SetString(checkValid(x))
-	ry.SetString(checkValid(y))
+	fromNumber(&rx, x)
+	fromNumber(&ry, y)
 	return toNumber(rx.Add(&rx, &ry))
 }
 
 // Sub returns the difference x - y.
 func Sub(x, y Number) Number {
 	var rx, ry big.Rat
-	rx.SetString(checkValid(x))
-	ry.SetString(checkValid(y))
+	fromNumber(&rx, x)
+	fromNumber(&ry, y)
 	return toNumber(rx.Sub(&rx, &ry))
 }
 
 // Mul returns the product x * y.
 func Mul(x, y Number) Number {
 	var rx, ry big.Rat
-	rx.SetString(checkValid(x))
-	ry.SetString(checkValid(y))
+	fromNumber(&rx, x)
+	fromNumber(&ry, y)
 	return toNumber(rx.Mul(&rx, &ry))
 }
 
@@ -78,7 +78,7 @@ func Mul(x, y Number) Number {
 func Sum(n ...Number) Number {
 	var rs, rn big.Rat
 	for _, n := range n {
-		rn.SetString(checkValid(n))
+		fromNumber(&rn, n)
 		rs.Add(&rs, &rn)
 	}
 	return toNumber(&rs)
@@ -89,7 +89,7 @@ func Prod(n ...Number) Number {
 	var rp, rn big.Rat
 	rp.SetUint64(1)
 	for _, n := range n {
-		rn.SetString(checkValid(n))
+		fromNumber(&rn, n)
 		rp.Mul(&rp, &rn)
 	}
 	return toNumber(&rp)
@@ -98,7 +98,7 @@ func Prod(n ...Number) Number {
 // Pow returns xⁿ (the nth power of x).
 func Pow(x Number, n uint) Number {
 	var rx, ry big.Rat
-	rx.SetString(checkValid(x))
+	fromNumber(&rx, x)
 	ry.SetUint64(1)
 
 	for {
@@ -115,15 +115,18 @@ func Pow(x Number, n uint) Number {
 // Cmp compares x and y, like [cmp.Compare].
 func Cmp(x, y Number) int {
 	var rx, ry big.Rat
-	rx.SetString(checkValid(x))
-	ry.SetString(checkValid(y))
+	fromNumber(&rx, x)
+	fromNumber(&ry, y)
+	if x == y {
+		return 0
+	}
 	return rx.Cmp(&ry)
 }
 
 // IsInt reports whether x is an integer.
 func IsInt(x Number) bool {
 	var rx big.Rat
-	rx.SetString(checkValid(x))
+	fromNumber(&rx, x)
 	return rx.IsInt()
 }
 
@@ -179,4 +182,22 @@ func toNumber(x *big.Rat) Number {
 		return Number(x.FloatString(n))
 	}
 	panic("inexact decimal")
+}
+
+func fromNumber(rx *big.Rat, x Number) {
+	if !IsValid(x) {
+		panic("invalid decimal: " + string(x))
+	}
+	_, ok := rx.SetString(string(x))
+	if ok {
+		return
+	}
+	panic("decimal overflow: " + string(x))
+}
+
+func checkNumber(x Number) string {
+	if IsValid(x) {
+		return string(x)
+	}
+	panic("invalid decimal: " + string(x))
 }

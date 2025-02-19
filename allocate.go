@@ -21,10 +21,10 @@ func Allocate(amount, unit Number, ratios ...uint) []Number {
 
 func allocate(amount, unit Number, n uint, ratios []uint) []Number {
 	var ra, ru big.Rat
-	ra.SetString(checkValid(amount))
+	fromNumber(&ra, amount)
 
 	if unit != "1" {
-		ru.SetString(checkValid(unit))
+		fromNumber(&ru, unit)
 		if ru.Sign() <= 0 {
 			panic("nonpositive unit")
 		}

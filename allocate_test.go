@@ -2,6 +2,7 @@ package decimal_test
 
 import (
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/ncruces/decimal"
@@ -65,4 +66,32 @@ func TestAllocate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func FuzzSplit(f *testing.F) {
+	f.Add("", uint(1))
+	f.Add("0", uint(0))
+	f.Add("-1", uint(1))
+	f.Add("10", uint(100))
+	f.Add("0.1", uint(10))
+
+	f.Fuzz(func(t *testing.T, v string, n uint) {
+		if n == 0 || n > 97 {
+			return
+		}
+		d := decimal.Number(v)
+		if !decimal.IsValid(d) {
+			return
+		}
+		if f, err := strconv.ParseFloat(v, 64); f == 0 || err != nil {
+			return
+		}
+
+		want := decimal.Trunc(d, "1")
+		got := decimal.Sum(decimal.Split(want, "1", n)...)
+
+		if decimal.Cmp(got, want) != 0 {
+			t.Fatalf("got=%q want=%q", got, want)
+		}
+	})
 }

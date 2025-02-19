@@ -99,10 +99,3 @@ func IsValid(x Number) bool {
 		return false
 	}
 }
-
-func checkValid(x Number) string {
-	if IsValid(x) {
-		return string(x)
-	}
-	panic("invalid decimal: " + string(x))
-}

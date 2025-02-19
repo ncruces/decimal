@@ -77,10 +77,10 @@ func (r rounder) round(rx *big.Rat) {
 
 func scale(x, unit Number, round func(*big.Rat)) Number {
 	var rx, ru big.Rat
-	rx.SetString(checkValid(x))
+	fromNumber(&rx, x)
 
 	if unit != "1" {
-		ru.SetString(checkValid(unit))
+		fromNumber(&ru, unit)
 		if ru.Sign() <= 0 {
 			panic("nonpositive unit")
 		}
