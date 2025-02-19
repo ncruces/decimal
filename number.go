@@ -95,6 +95,23 @@ func Prod(n ...Number) Number {
 	return toNumber(&rp)
 }
 
+// Pow returns xⁿ (the nth power of x).
+func Pow(x Number, n uint) Number {
+	var rx, ry big.Rat
+	rx.SetString(checkValid(x))
+	ry.SetUint64(1)
+
+	for {
+		if n&1 != 0 {
+			ry.Mul(&rx, &ry)
+		}
+		if n >>= 1; n == 0 {
+			return toNumber(&ry)
+		}
+		rx.Mul(&rx, &rx)
+	}
+}
+
 // Cmp compares x and y, like [cmp.Compare].
 func Cmp(x, y Number) int {
 	var rx, ry big.Rat

@@ -241,6 +241,30 @@ func TestProd(t *testing.T) {
 	}
 }
 
+func TestPow(t *testing.T) {
+	tests := []struct {
+		x    decimal.Number
+		n    uint
+		want decimal.Number
+	}{
+		{"0", 0, "1"},
+		{"1", 0, "1"},
+		{"1", 1, "1"},
+		{"2", 1, "2"},
+		{"1", 10, "1"},
+		{"2", 10, "1024"},
+		{"0.01", 10, "0.00000000000000000001"},
+		{"0.02", 10, "0.00000000000000001024"},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.want), func(t *testing.T) {
+			if got := decimal.Pow(tt.x, tt.n); got != tt.want {
+				t.Errorf("Pow() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestFmt(t *testing.T) {
 	tests := []struct {
 		fmt  string
