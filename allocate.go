@@ -5,12 +5,16 @@ import (
 )
 
 // Split splits an integer amount of units over n parties.
+// Leftover units are distributed round-robin,
+// from left to right.
 func Split(amount, unit Number, n uint) []Number {
 	return allocate(amount, unit, n, nil)
 }
 
 // Allocate allocates an integer amount of units
 // according to a list of ratios.
+// Leftover units are distributed round-robin,
+// from left to right.
 func Allocate(amount, unit Number, ratios ...uint) []Number {
 	return allocate(amount, unit, 0, ratios)
 }
