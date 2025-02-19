@@ -92,6 +92,13 @@ func Cmp(x, y Number) int {
 	return rx.Cmp(&ry)
 }
 
+// IsInt reports whether x is an integer.
+func IsInt(x Number) bool {
+	var rx big.Rat
+	rx.SetString(checkValid(x))
+	return rx.IsInt()
+}
+
 // Fmt is a formatter for a decimal number.
 type Fmt Number
 

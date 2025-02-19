@@ -185,6 +185,24 @@ func TestCmp(t *testing.T) {
 	}
 }
 
+func TestIsInt(t *testing.T) {
+	tests := []struct {
+		x    decimal.Number
+		want bool
+	}{
+		{"0", true},
+		{"0.1", false},
+		{"0.99999999999999999999999999999999", false},
+	}
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			if got := decimal.IsInt(tt.x); got != tt.want {
+				t.Errorf("IsInt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestSum(t *testing.T) {
 	tests := []struct {
 		n    []decimal.Number
